@@ -1,0 +1,335 @@
+import React, { useState, useEffect } from 'react';
+import { Plus, Wallet, CreditCard, Smartphone, TrendingUp, TrendingDown } from 'lucide-react';
+import { accountsAPI, transactionsAPI } from '../services/api';
+import SharedLayout from './SharedLayout';
+
+const Accounts = () => {
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAccount, setNewAccount] = useState({
+    name: '',
+    account_type: 'bank',
+    currency: 'USD',
+    balance: '',
+    color: '#3B82F6'
+  });
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    try {
+      const response = await accountsAPI.getAll();
+      setAccounts(response.data);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddAccount = async (e) => {
+    e.preventDefault();
+    try {
+      await accountsAPI.create({
+        ...newAccount,
+        balance: parseFloat(newAccount.balance) || 0
+      });
+      setShowAddModal(false);
+      setNewAccount({
+        name: '',
+        account_type: 'bank',
+        currency: 'USD',
+        balance: '',
+        color: '#3B82F6'
+      });
+      fetchAccounts(); // Refresh the list
+    } catch (error) {
+      console.error('Error adding account:', error);
+    }
+  };
+
+  const formatCurrency = (amount, currency = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2
+    }).format(amount);
+  };
+
+  const getAccountTypeIcon = (type) => {
+    switch (type) {
+      case 'bank':
+        return <CreditCard className="h-5 w-5" />;
+      case 'mobile_money':
+        return <Smartphone className="h-5 w-5" />;
+      case 'cash':
+        return <Wallet className="h-5 w-5" />;
+      case 'savings':
+        return <TrendingUp className="h-5 w-5" />;
+      default:
+        return <Wallet className="h-5 w-5" />;
+    }
+  };
+  const getCurrencySymbol = (currency) => {
+    const symbols = {
+      USD: '$',
+      ZIG: 'ZiG',
+      ZAR: 'R'
+    };
+    return symbols[currency] || currency;
+  };
+
+  const getAccountTypeLabel = (type) => {
+    const labels = {
+      bank: 'Bank Account',
+      mobile_money: 'Mobile Money',
+      cash: 'Cash',
+      savings: 'Savings'
+    };
+    return labels[type] || type;
+  };
+
+  if (loading) {
+    return (
+      <SharedLayout activeNav="accounts">
+        <div className="space-y-4">
+          <div className="skeleton-text h-8 w-48"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="skeleton-chart h-40"></div>
+            ))}
+          </div>
+        </div>
+      </SharedLayout>
+    );
+  }
+
+  return (
+    <SharedLayout activeNav="accounts">
+      <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Accounts</h1>
+          <p className="text-gray-600">Manage your financial accounts</p>
+        </div>
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="btn btn-primary"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Account
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {accounts.map((account) => (
+          <div key={account.id} className="card hover:shadow-lg transition-shadow">
+            <div className="card-body">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="h-10 w-10 rounded-full flex items-center justify-center text-white"
+                    style={{ backgroundColor: account.color }}
+                  >
+                    {getAccountTypeIcon(account.account_type)}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{account.name}</h3>
+                    <p className="text-sm text-gray-500">{getAccountTypeLabel(account.account_type)}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium px-2.5 py-0.5 rounded bg-gray-100 text-gray-800">
+                  {account.currency}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Current Balance</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(account.balance, account.currency)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Account Type</span>
+                  <span className="text-gray-700 capitalize">{account.account_type}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Currency</span>
+                  <span className="text-gray-700">{account.currency}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex space-x-2">
+                <button className="flex-1 btn btn-outline py-2 text-sm">
+                  View Transactions
+                </button>
+                <button className="flex-1 btn btn-outline py-2 text-sm">
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {accounts.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <Wallet className="h-12 w-12 mx-auto" />
+          </div>
+          <p className="text-gray-500 mb-2">No accounts yet</p>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="btn btn-primary"
+          >
+            Add Your First Account
+          </button>
+        </div>
+      )}
+
+      {/* Account Summary */}
+      {accounts.length > 0 && (
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Summary</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {['USD', 'ZIG', 'ZAR'].map(currency => {
+                const currencyAccounts = accounts.filter(acc => acc.currency === currency);
+                const totalBalance = currencyAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+                
+                if (currencyAccounts.length === 0) return null;
+                
+                return (
+                  <div key={currency} className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {formatCurrency(totalBalance, currency)}
+                    </div>
+                    <div className="text-sm text-gray-600">Total {currency}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {currencyAccounts.length} account{currencyAccounts.length !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-900">
+                  {formatCurrency(accounts.reduce((sum, acc) => sum + acc.balance, 0))}
+                </div>
+                <div className="text-sm text-blue-700">Total Balance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Account Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Account</h3>
+              
+              <form onSubmit={handleAddAccount} className="space-y-4">
+                <div>
+                  <label className="form-label">Account Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newAccount.name}
+                    onChange={(e) => setNewAccount({...newAccount, name: e.target.value})}
+                    className="form-input"
+                    placeholder="e.g., EcoCash USD"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Account Type</label>
+                  <select
+                    required
+                    value={newAccount.account_type}
+                    onChange={(e) => setNewAccount({...newAccount, account_type: e.target.value})}
+                    className="form-select"
+                  >
+                    <option value="bank">Bank Account</option>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="cash">Cash</option>
+                    <option value="savings">Savings</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Currency</label>
+                  <select
+                    required
+                    value={newAccount.currency}
+                    onChange={(e) => setNewAccount({...newAccount, currency: e.target.value})}
+                    className="form-select"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="ZIG">ZiG</option>
+                    <option value="ZAR">ZAR</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Initial Balance</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={newAccount.balance}
+                    onChange={(e) => setNewAccount({...newAccount, balance: e.target.value})}
+                    className="form-input"
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Color</label>
+                  <div className="flex space-x-2">
+                    {['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'].map(color => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`h-8 w-8 rounded-full border-2 ${
+                          newAccount.color === color ? 'border-gray-900' : 'border-gray-300'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setNewAccount({...newAccount, color})}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="btn btn-outline"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    Add Account
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+    </SharedLayout>
+  );
+};
+
+export default Accounts;
