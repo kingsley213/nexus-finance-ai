@@ -68,7 +68,6 @@ const Goals = () => {
       setNotification({ show: false, message: '', type: 'success' });
     }, 3000);
   };
-  };
 
   const updateGoalProgress = async (goalId, currentAmount) => {
     try {
