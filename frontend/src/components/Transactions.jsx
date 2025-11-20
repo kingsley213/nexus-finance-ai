@@ -21,6 +21,11 @@ const Transactions = () => {
   const [importFile, setImportFile] = useState(null);
   const [importError, setImportError] = useState('');
   const [importSuccess, setImportSuccess] = useState('');
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
 
   useEffect(() => {
     fetchData();
@@ -48,6 +53,7 @@ const Transactions = () => {
         ...newTransaction,
         amount: parseFloat(newTransaction.amount)
       });
+      showNotification(`Transaction "${newTransaction.description}" added successfully!`, 'success');
       setShowAddModal(false);
       setNewTransaction({
         description: '',
@@ -59,7 +65,15 @@ const Transactions = () => {
       fetchData(); // Refresh the list
     } catch (error) {
       console.error('Error adding transaction:', error);
+      showNotification('Failed to add transaction', 'error');
     }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
   };
 
   const predictCategory = async (description) => {
@@ -234,11 +248,24 @@ const Transactions = () => {
   return (
     <SharedLayout activeNav="transactions">
       <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600">Manage your income and expenses</p>
-        </div>
+        {/* Notification */}
+        {notification.show && (
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+            notification.type === 'success' ? 'bg-green-500 text-white' :
+            notification.type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+          }`}>
+            <div className="flex items-center space-x-2">
+              <span className="font-medium">{notification.message}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-1">Transactions</h1>
+            <p className="text-gray-600 font-medium">Manage your income and expenses</p>
+          </div>
         <div className="flex space-x-3">
           <button 
             onClick={handleExport}

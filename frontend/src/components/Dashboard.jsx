@@ -99,8 +99,8 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Welcome to your financial overview</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-1">Dashboard</h1>
+          <p className="text-gray-600 font-medium">Welcome to your financial overview</p>
         </div>
         <div className="flex space-x-3">
           <button className="btn btn-outline">

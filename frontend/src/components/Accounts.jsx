@@ -25,6 +25,11 @@ const Accounts = () => {
     balance: '',
     color: '#3B82F6'
   });
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success' // 'success', 'error', 'info'
+  });
 
   useEffect(() => {
     fetchAccounts();
@@ -56,9 +61,11 @@ const Accounts = () => {
         balance: '',
         color: '#3B82F6'
       });
+      showNotification(`Account "${newAccount.name}" created successfully!`, 'success');
       fetchAccounts(); // Refresh the list
     } catch (error) {
       console.error('Error adding account:', error);
+      showNotification('Failed to create account', 'error');
     }
   };
 
@@ -70,9 +77,11 @@ const Accounts = () => {
         balance: parseFloat(editAccount.balance) || 0
       });
       setShowEditModal(false);
+      showNotification(`Account "${editAccount.name}" updated successfully!`, 'success');
       fetchAccounts();
     } catch (error) {
       console.error('Error updating account:', error);
+      showNotification('Failed to update account', 'error');
     }
   };
 
@@ -99,6 +108,13 @@ const Accounts = () => {
       console.error('Error fetching transactions:', error);
     }
     setShowTransactionsModal(true);
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
   };
 
   const formatCurrency = (amount, currency = 'USD') => {
@@ -160,11 +176,24 @@ const Accounts = () => {
   return (
     <SharedLayout activeNav="accounts">
       <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Accounts</h1>
-          <p className="text-gray-600">Manage your financial accounts</p>
-        </div>
+        {/* Notification */}
+        {notification.show && (
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+            notification.type === 'success' ? 'bg-green-500 text-white' :
+            notification.type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+          }`}>
+            <div className="flex items-center space-x-2">
+              <span className="font-medium">{notification.message}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-1">Accounts</h1>
+            <p className="text-gray-600 font-medium">Manage your financial accounts</p>
+          </div>
         <button 
           onClick={() => setShowAddModal(true)}
           className="btn btn-primary"

@@ -16,6 +16,11 @@ const Budgets = () => {
     currency: 'USD',
     period: 'monthly'
   });
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
 
   const categories = [
     'food', 'transport', 'utilities', 'entertainment', 'healthcare',
@@ -53,6 +58,7 @@ const Budgets = () => {
       });
       
       setSuccess('Budget created successfully!');
+      showNotification(`Budget for ${newBudget.category} created successfully!`, 'success');
       setShowModal(false);
       setNewBudget({ category: 'food', amount: '', currency: 'USD', period: 'monthly' });
       fetchBudgets();
@@ -60,7 +66,15 @@ const Budgets = () => {
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to create budget');
+      showNotification('Failed to create budget', 'error');
     }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
   };
 
   const deleteBudget = async (budgetId) => {
@@ -148,11 +162,24 @@ const Budgets = () => {
   return (
     <SharedLayout activeNav="budgets">
       <div className="p-6">
+      {/* Notification */}
+      {notification.show && (
+        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+          notification.type === 'success' ? 'bg-green-500 text-white' :
+          notification.type === 'error' ? 'bg-red-500 text-white' :
+          'bg-blue-500 text-white'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Budgets</h1>
-          <p className="text-gray-600 mt-1">Track your spending against budgets</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-1">Budgets</h1>
+          <p className="text-gray-600 font-medium">Track your spending against budgets</p>
         </div>
         <div className="flex gap-3">
           {budgets.length > 0 && (

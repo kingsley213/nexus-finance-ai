@@ -15,6 +15,11 @@ const Goals = () => {
     category: 'savings',
     priority: 'medium'
   });
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,6 +45,7 @@ const Goals = () => {
         ...newGoal,
         target_amount: parseFloat(newGoal.target_amount)
       });
+      showNotification(`Goal "${newGoal.title}" created successfully!`, 'success');
       setShowAddModal(false);
       setNewGoal({
         title: '',
@@ -52,7 +58,16 @@ const Goals = () => {
       fetchGoals(); // Refresh the list
     } catch (error) {
       console.error('Error adding goal:', error);
+      showNotification('Failed to add goal', 'error');
     }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
+  };
   };
 
   const updateGoalProgress = async (goalId, currentAmount) => {
@@ -131,10 +146,23 @@ const Goals = () => {
   return (
     <SharedLayout activeNav="goals">
       <div className="space-y-6">
+      {/* Notification */}
+      {notification.show && (
+        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+          notification.type === 'success' ? 'bg-green-500 text-white' :
+          notification.type === 'error' ? 'bg-red-500 text-white' :
+          'bg-blue-500 text-white'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Financial Goals</h1>
-          <p className="text-gray-600">Track your savings and investment targets</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-1">Financial Goals</h1>
+          <p className="text-gray-600 font-medium">Track your savings and investment targets</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}

@@ -22,6 +22,11 @@ const Investments = () => {
     risk_level: 'medium',
     notes: ''
   });
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
 
   const investmentTypes = [
     { value: 'stocks', label: 'Stocks' },
@@ -81,9 +86,18 @@ const Investments = () => {
       fetchInvestments();
       
       setTimeout(() => setSuccess(''), 3000);
+      showNotification(`Investment "${newInvestment.name}" added successfully!`, 'success');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to create investment');
+      showNotification('Failed to create investment', 'error');
     }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
   };
 
   const deleteInvestment = async (investmentId) => {
@@ -124,8 +138,8 @@ const Investments = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Investment Portfolio</h1>
-          <p className="text-gray-600 mt-1">Track and manage your investments</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-1">Investment Portfolio</h1>
+          <p className="text-gray-600 font-medium">Manage and track your investments</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -136,16 +150,16 @@ const Investments = () => {
         </button>
       </div>
 
-      {/* Alerts */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-          {success}
+      {/* Notification */}
+      {notification.show && (
+        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+          notification.type === 'success' ? 'bg-green-500 text-white' :
+          notification.type === 'error' ? 'bg-red-500 text-white' :
+          'bg-blue-500 text-white'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <span className="font-medium">{notification.message}</span>
+          </div>
         </div>
       )}
 
