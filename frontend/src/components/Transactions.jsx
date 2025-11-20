@@ -263,8 +263,8 @@ const Transactions = () => {
 
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-1">Transactions</h1>
-            <p className="text-gray-600 font-medium">Manage your income and expenses</p>
+            <h1 className="text-4xl font-extrabold text-white mb-1">Transactions</h1>
+            <p className="text-blue-200 font-medium">Manage your income and expenses</p>
           </div>
         <div className="flex space-x-3">
           <button 

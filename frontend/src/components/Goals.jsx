@@ -161,8 +161,8 @@ const Goals = () => {
 
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-1">Financial Goals</h1>
-          <p className="text-gray-600 font-medium">Track your savings and investment targets</p>
+          <h1 className="text-4xl font-extrabold text-white mb-1">Financial Goals</h1>
+          <p className="text-blue-200 font-medium">Track your savings and investment targets</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}

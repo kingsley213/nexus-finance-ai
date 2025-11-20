@@ -191,8 +191,8 @@ const Accounts = () => {
 
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-1">Accounts</h1>
-            <p className="text-gray-600 font-medium">Manage your financial accounts</p>
+            <h1 className="text-4xl font-extrabold text-white mb-1">Accounts</h1>
+            <p className="text-blue-200 font-medium">Manage your financial accounts</p>
           </div>
         <button 
           onClick={() => setShowAddModal(true)}

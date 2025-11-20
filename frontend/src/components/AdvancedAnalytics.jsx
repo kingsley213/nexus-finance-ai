@@ -102,8 +102,8 @@ const AdvancedAnalytics = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-1">Advanced Analytics</h1>
-          <p className="text-gray-600 font-medium">AI-powered insights and forecasts</p>
+          <h1 className="text-4xl font-extrabold text-white mb-1">Advanced Analytics</h1>
+          <p className="text-blue-200 font-medium">AI-powered insights and forecasts</p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">

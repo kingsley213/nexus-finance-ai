@@ -138,8 +138,8 @@ const Investments = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-1">Investment Portfolio</h1>
-          <p className="text-gray-600 font-medium">Manage and track your investments</p>
+          <h1 className="text-4xl font-extrabold text-white mb-1">Investment Portfolio</h1>
+          <p className="text-blue-200 font-medium">Manage and track your investments</p>
         </div>
         <button
           onClick={() => setShowModal(true)}

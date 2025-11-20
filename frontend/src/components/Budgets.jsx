@@ -178,8 +178,8 @@ const Budgets = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-1">Budgets</h1>
-          <p className="text-gray-600 font-medium">Track your spending against budgets</p>
+          <h1 className="text-4xl font-extrabold text-white mb-1">Budgets</h1>
+          <p className="text-blue-200 font-medium">Track your spending against budgets</p>
         </div>
         <div className="flex gap-3">
           {budgets.length > 0 && (
