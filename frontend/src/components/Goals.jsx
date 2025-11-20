@@ -132,13 +132,13 @@ const Goals = () => {
     return (
       <SharedLayout activeNav="goals">
         <div className="space-y-4">
-        <div className="skeleton-text h-8 w-48"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="skeleton-chart h-48"></div>
-          ))}
+          <div className="skeleton-text h-8 w-48"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="skeleton-chart h-48"></div>
+            ))}
+          </div>
         </div>
-      </div>
       </SharedLayout>
     );
   }
@@ -146,24 +146,24 @@ const Goals = () => {
   return (
     <SharedLayout activeNav="goals">
       <div className="space-y-6">
-      {/* Notification */}
-      {notification.show && (
-        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
-          notification.type === 'success' ? 'bg-green-500 text-white' :
-          notification.type === 'error' ? 'bg-red-500 text-white' :
-          'bg-blue-500 text-white'
-        }`}>
-          <div className="flex items-center space-x-2">
-            <span className="font-medium">{notification.message}</span>
+        {/* Notification */}
+        {notification.show && (
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-fadeIn ${
+            notification.type === 'success' ? 'bg-green-500 text-white' :
+            notification.type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+          }`}>
+            <div className="flex items-center space-x-2">
+              <span className="font-medium">{notification.message}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-4xl font-extrabold text-white mb-1">Financial Goals</h1>
-          <p className="text-blue-200 font-medium">Track your savings and investment targets</p>
-        </div>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-extrabold text-white mb-1">Financial Goals</h1>
+            <p className="text-blue-200 font-medium">Track your savings and investment targets</p>
+          </div>
         <button 
           onClick={() => setShowAddModal(true)}
           className="btn btn-primary"
@@ -171,11 +171,11 @@ const Goals = () => {
           <Plus className="h-4 w-4 mr-2" />
           Add Goal
         </button>
-      </div>
+        </div>
 
-      {/* Goals Summary */}
-      {goals.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Goals Summary */}
+        {goals.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="card text-center">
             <div className="card-body">
               <div className="text-2xl font-bold text-gray-900">{goals.length}</div>
