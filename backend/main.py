@@ -47,13 +47,12 @@ Security Considerations:
 - JWT tokens expire after 24 hours - NFR9
 - SQL injection prevented through SQLAlchemy ORM parameterized queries - NFR10
 - HTTPS required in production (TLS 1.3) - NFR7
-
 Performance Targets:
 -------------------
 As specified in Chapter 4 (NFR1-NFR5):
-- API response time: <100ms (p95) ✓ Achieved: 78ms average
-- Concurrent users: 100+ ✓ Tested with Locust load testing
-- Database queries: <50ms ✓ Optimized with strategic indexing
+- API response time: <100ms (p95) [Achieved: 78ms average]
+- Concurrent users: 100+ [Tested with Locust load testing]
+- Database queries: <50ms [Optimized with strategic indexing]
 
 Development Notes:
 ------------------
@@ -313,11 +312,11 @@ def startup_event():
     # Create all database tables defined in models module
     # This is idempotent - won't error if tables already exist
     create_tables()
-    print("✅ Database tables created")
+    print("[+] Database tables created")
     
     # The ML model is loaded when the classifier module is imported at the top of this file
     # I just log confirmation here for operational visibility
-    print("🤖 ML model initialized and ready")
+    print("[+] ML model initialized and ready")
     # During beta testing, seeing this message confirmed the server started correctly
     # for the 300+ users who participated (Chapter 6, Section 6.5)
 

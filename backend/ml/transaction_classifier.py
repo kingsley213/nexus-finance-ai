@@ -27,7 +27,7 @@ Algorithm Choice Rationale:
 ---------------------------
 I evaluated 5 different algorithms during Sprint 4 (March 2024):
 
-1. Multinomial Naive Bayes: 92.1% accuracy, 0.3s training, <1ms inference ✓ SELECTED
+1. Multinomial Naive Bayes: 92.1% accuracy, 0.3s training, <1ms inference [SELECTED]
 2. Random Forest: 94.1% accuracy, 8.4s training, 5ms inference (too slow for real-time)
 3. Logistic Regression: 87.3% accuracy (lower than target)
 4. SVM (Linear): 89.1% accuracy, 15s training (slow)
@@ -348,8 +348,8 @@ class AdvancedTransactionClassifier:
         
         self.is_trained = True
         
-        print(f"✅ Model trained with accuracy: {accuracy:.3f}")
-        print("📋 Classification Report:")
+        print(f"[+] Model trained with accuracy: {accuracy:.3f}")
+        print("[*] Classification Report:")
         print(classification_report(y_test, y_pred))
         
         # Save the model
@@ -401,7 +401,7 @@ class AdvancedTransactionClassifier:
                 'categories': self.categories
             }, f)
         
-        print(f"💾 Model saved to {filepath}")
+        print(f"[+] Model saved to {filepath}")
     
     def load_model(self, filepath=None):
         """Load trained model"""
@@ -415,9 +415,9 @@ class AdvancedTransactionClassifier:
                 self.vectorizer = data['vectorizer']
                 self.categories = data['categories']
                 self.is_trained = True
-            print(f"📥 Model loaded from {filepath}")
+            print("[+] Model loaded from " + filepath)
         except FileNotFoundError:
-            print(f"❌ Model file {filepath} not found, will train new model")
+            print("[!] Model file " + filepath + " not found, will train new model")
             self.is_trained = False
 
 # Export classifier instance for import in main.py
