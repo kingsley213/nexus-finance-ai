@@ -114,12 +114,12 @@ const MarketTrends = () => {
 
   if (loading && !marketData) {
     return (
-      <SharedLayout activeNav="market-trends">
-        <div className="space-y-6">
+    <SharedLayout activeNav="market-trends">
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Market Trends</h1>
-            <p className="text-gray-600">Zimbabwe Economic Indicators & News</p>
+            <h1 className="text-4xl font-extrabold text-white mb-1">Market Trends</h1>
+            <p className="text-blue-200 font-medium\">Zimbabwe Economic Indicators & News</p>
           </div>
           <div className="skeleton-text h-8 w-32"></div>
         </div>
@@ -129,19 +129,19 @@ const MarketTrends = () => {
           ))}
         </div>
       </div>
-      </SharedLayout>
+    </SharedLayout>
     );
   }
 
   return (
     <SharedLayout activeNav="market-trends">
       <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Market Trends</h1>
-          <p className="text-gray-600">Zimbabwe Economic Indicators & News</p>
-        </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-extrabold text-white mb-1">Market Trends</h1>
+            <p className="text-blue-200 font-medium">Zimbabwe Economic Indicators & News</p>
+          </div>
+          <div className="flex items-center space-x-3">
           {lastUpdated && (
             <span className="text-sm text-gray-500">
               Updated: {lastUpdated.toLocaleTimeString()}
