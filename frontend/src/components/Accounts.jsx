@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Wallet, CreditCard, Smartphone, TrendingUp, TrendingDown } from 'lucide-react';
+import { Plus, Wallet, CreditCard, Smartphone, TrendingUp, TrendingDown, X } from 'lucide-react';
 import { accountsAPI, transactionsAPI } from '../services/api';
 import SharedLayout from './SharedLayout';
 
@@ -7,7 +7,18 @@ const Accounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showTransactionsModal, setShowTransactionsModal] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [accountTransactions, setAccountTransactions] = useState([]);
   const [newAccount, setNewAccount] = useState({
+    name: '',
+    account_type: 'bank',
+    currency: 'USD',
+    balance: '',
+    color: '#3B82F6'
+  });
+  const [editAccount, setEditAccount] = useState({
     name: '',
     account_type: 'bank',
     currency: 'USD',
@@ -49,6 +60,45 @@ const Accounts = () => {
     } catch (error) {
       console.error('Error adding account:', error);
     }
+  };
+
+  const handleEditAccount = async (e) => {
+    e.preventDefault();
+    try {
+      await accountsAPI.update(selectedAccount.id, {
+        ...editAccount,
+        balance: parseFloat(editAccount.balance) || 0
+      });
+      setShowEditModal(false);
+      fetchAccounts();
+    } catch (error) {
+      console.error('Error updating account:', error);
+    }
+  };
+
+  const openEditModal = (account) => {
+    setSelectedAccount(account);
+    setEditAccount({
+      name: account.name,
+      account_type: account.account_type,
+      currency: account.currency,
+      balance: account.balance,
+      color: account.color
+    });
+    setShowEditModal(true);
+  };
+
+  const openTransactionsModal = async (account) => {
+    setSelectedAccount(account);
+    try {
+      const response = await transactionsAPI.getAll({
+        account_id: account.id
+      });
+      setAccountTransactions(response.data);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+    setShowTransactionsModal(true);
   };
 
   const formatCurrency = (amount, currency = 'USD') => {
@@ -166,10 +216,16 @@ const Accounts = () => {
               </div>
 
               <div className="mt-4 flex space-x-2">
-                <button className="flex-1 btn btn-outline py-2 text-sm">
+                <button 
+                  onClick={() => openTransactionsModal(account)}
+                  className="flex-1 btn btn-outline py-2 text-sm hover:bg-blue-50"
+                >
                   View Transactions
                 </button>
-                <button className="flex-1 btn btn-outline py-2 text-sm">
+                <button 
+                  onClick={() => openEditModal(account)}
+                  className="flex-1 btn btn-outline py-2 text-sm hover:bg-blue-50"
+                >
                   Edit
                 </button>
               </div>
@@ -323,6 +379,161 @@ const Accounts = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Account Modal */}
+      {showEditModal && selectedAccount && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Edit Account</h3>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditAccount} className="space-y-4">
+              <div>
+                <label className="form-label">Account Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editAccount.name}
+                  onChange={(e) => setEditAccount({...editAccount, name: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Account Type</label>
+                <select
+                  required
+                  value={editAccount.account_type}
+                  onChange={(e) => setEditAccount({...editAccount, account_type: e.target.value})}
+                  className="form-select"
+                >
+                  <option value="bank">Bank Account</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="cash">Cash</option>
+                  <option value="savings">Savings</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Currency</label>
+                <select
+                  required
+                  value={editAccount.currency}
+                  onChange={(e) => setEditAccount({...editAccount, currency: e.target.value})}
+                  className="form-select"
+                >
+                  <option value="USD">USD</option>
+                  <option value="ZIG">ZiG</option>
+                  <option value="ZAR">ZAR</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Current Balance</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={editAccount.balance}
+                  onChange={(e) => setEditAccount({...editAccount, balance: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Color</label>
+                <div className="flex space-x-2">
+                  {['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'].map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`h-8 w-8 rounded-full border-2 ${
+                        editAccount.color === color ? 'border-gray-900' : 'border-gray-300'
+                      }`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setEditAccount({...editAccount, color})}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Transactions Modal */}
+      {showTransactionsModal && selectedAccount && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">Transactions</h3>
+                <p className="text-sm text-gray-500">{selectedAccount.name}</p>
+              </div>
+              <button
+                onClick={() => setShowTransactionsModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {accountTransactions.length > 0 ? (
+                accountTransactions.map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{transaction.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className={`font-semibold ${transaction.amount > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {transaction.amount > 0 ? '+' : ''}{formatCurrency(transaction.amount, selectedAccount.currency)}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  No transactions found for this account
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowTransactionsModal(false)}
+                className="btn btn-outline"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
